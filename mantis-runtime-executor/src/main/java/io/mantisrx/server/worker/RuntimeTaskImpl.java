@@ -19,7 +19,7 @@ import io.mantisrx.common.JsonSerializer;
 import io.mantisrx.runtime.Job;
 import io.mantisrx.runtime.loader.RuntimeTask;
 import io.mantisrx.runtime.loader.SinkSubscriptionStateHandler;
-import io.mantisrx.runtime.loader.cgroups.CgroupsMetricsCollector;
+import io.mantisrx.runtime.loader.config.MetricsCollector;
 import io.mantisrx.runtime.loader.config.WorkerConfiguration;
 import io.mantisrx.runtime.loader.config.WorkerConfigurationUtils;
 import io.mantisrx.runtime.loader.config.WorkerConfigurationWritable;
@@ -99,8 +99,9 @@ public class RuntimeTaskImpl extends AbstractIdleService implements RuntimeTask 
             this.wrappedExecuteStageRequest =
                 new WrappedExecuteStageRequest(PublishSubject.create(), executeStageRequest);
 
-            log.info("Picking Cgroups metrics collector.");
-            configWritable.setMetricsCollector(CgroupsMetricsCollector.valueOf(System.getProperties()));
+            MetricsCollector metricsCollector = config.getUsageSupplier();
+            log.info("Picking " + metricsCollector.getClass().getName() + ".");
+            configWritable.setMetricsCollector(metricsCollector);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
